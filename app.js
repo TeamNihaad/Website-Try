@@ -11,3 +11,37 @@ $('#docSearch').addEventListener('input',e=>{$$('.doc-row').forEach(row=>row.sty
 $('#timelineForm').addEventListener('submit',e=>{e.preventDefault();const q=$('#timelineInput').value;const a=$('#timelineAnswer');a.hidden=false;a.textContent=canned(q);});
 $('#generateDraft').addEventListener('click',()=>{const type=$('#claimType').value,context=$('#claimContext').value;const out=$('#draftOutput');out.hidden=false;out.textContent=`DRAFT — ${type.toUpperCase()}\nNORTHBANK DEVELOPMENT (SAMPLE PROJECT)\n\n1. INTRODUCTION\nThis document is an initial working draft prepared from the illustrative project record. It is not a legal opinion or a submission-ready claim.\n\n2. RELEVANT BACKGROUND\nThe sample record refers to an access restriction recorded on 02 August 2025 (NB/CLM/018), an updated construction programme dated 21 July 2025 (NB/PLN/031), and a revised drainage scope instruction dated 14 August 2025 (NB/VAR/042).\n\n3. CONTRACTUAL FRAMEWORK\nThe sample contract index identifies Clause 8.4 (Extension of Time), Clause 13.1 (Right to Vary) and Clause 20.2 (Claims for Payment and/or EOT). The executed contract wording, amendments, notice periods and procedural requirements must be inserted and verified.\n\n4. EVENT AND PARTICULARS\n${context.trim()||'[Insert event chronology, cause, effect, mitigation measures and supporting contemporary records.]'}\n\n5. RELIEF SOUGHT\n[Insert substantiated time and/or monetary relief, supported by the programme analysis and valuation.]\n\n6. SUPPORTING DOCUMENTS\n[Attach relevant notices, instructions, programmes, site records, photographs and cost records.]\n\nREVIEW NOTE: This sample is generated from fictional demo data. Verify every fact, source document, contractual provision and calculation. Obtain review by the responsible contract and legal professionals before use.`;out.scrollIntoView({behavior:'smooth',block:'nearest'});});
 $$('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{const target=$(a.getAttribute('href'));if(target&&target.id==='workspace')openTab('overview');}));
+(function initBentoMocks(){
+  const section=$('#platform');
+  const queryEl=$('#bentoQueryText'),draftEl=$('#bentoDraftText');
+  if(!section||!queryEl||!draftEl)return;
+  const cards=$$('#platform .bento-card');
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const queries=['Notice period under clause 8.4?','Which events trigger EOT?','Summarise variation NB/VAR/042'];
+  const draftLines=['Delay event from 02 Aug with notice under clause 8.4…','Supporting records attached from project correspondence…'];
+  let qi=0,di=0,active=0,timer=null,running=false;
+  const typeInto=(el,text,onDone)=>{
+    let i=0;
+    const step=()=>{
+      if(!running){el.textContent=text;return;}
+      el.textContent=text.slice(0,++i);
+      if(i<text.length)timer=setTimeout(step,reduced?0:32);
+      else onDone();
+    };
+  step();
+  };
+  const cycle=()=>{
+    if(!running)return;
+    cards.forEach((c,j)=>c.classList.toggle('is-live',j===active));
+    typeInto(queryEl,queries[qi],()=>{
+      typeInto(draftEl,draftLines[di],()=>{
+        qi=(qi+1)%queries.length;di=(di+1)%draftLines.length;active=(active+1)%cards.length;
+        timer=setTimeout(cycle,reduced?2200:1400);
+      });
+    });
+  };
+  const start=()=>{running=true;cycle();};
+  const stop=()=>{running=false;clearTimeout(timer);cards.forEach(c=>c.classList.remove('is-live'));};
+  if(reduced){queryEl.textContent=queries[0];draftEl.textContent=draftLines[0];return;}
+  new IntersectionObserver(([e])=>{e.isIntersecting?start():stop();},{threshold:0.15}).observe(section);
+})();

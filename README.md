@@ -29,7 +29,7 @@ Then visit http://localhost:8000.
    - `A` records for `@` to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
    - `CNAME` record for `www` to `<your-github-username>.github.io`.
 5. In GitHub Pages settings, set the custom domain to `lexcrete.com`, wait for DNS verification, then enable **Enforce HTTPS**.
-6. Replace the placeholder contact email `hello@lexcrete.com` if you use a different inbox.
+6. Replace the placeholder contact email `contact@lexcrete.com` if you use a different inbox.
 
 DNS changes can take time to propagate. Check GitHub's current Pages documentation for any updated requirements.
 
